@@ -828,11 +828,17 @@
 
     <div id="course-creator-modal" class="modal">
         <div class="modal-content-wrapper">
-            <div class="modal-content" style="max-width: 1200px;">
+            <div class="modal-content" style="max-width: 800px;">
                 <span class="close-btn" data-modal-id="course-creator-modal">×</span>
-                <h2>Crea Nuovo Corso</h2>
-                <form id="course-creation-form">
-                    <!-- Form fields for course creation -->
+                <h2>Crea / Modifica Corso</h2>
+                <form id="course-creation-form" class="form-container">
+                    <!-- Form fields for course creation will be dynamically populated or are defined here -->
+                    <label for="course-title">Titolo del Corso</label>
+                    <input type="text" id="course-title" required>
+                    <label for="course-description">Descrizione</label>
+                    <textarea id="course-description" rows="4" required></textarea>
+                    <!-- Add other fields as needed -->
+                    <button type="submit">Salva Corso</button>
                 </form>
             </div>
         </div>
@@ -892,95 +898,192 @@
         // --- GLOBAL VARIABLES ---
         let body, studentLoginBtn, adminLoginBtn, loginModal, registrationModal;
 
+        // --- AUTHENTICATION SYSTEM ---
+        class ELearningAuth {
+            constructor() {
+                this.currentUser = null;
+                this.isAdmin = false;
+                this.userProfile = null;
+                this.adminEmails = ADMIN_EMAILS; 
+                this.justLoggedIn = false;
+            }
+
+            async initialize() {
+                auth.onAuthStateChanged(async (user) => {
+                    this.currentUser = user;
+                    if (user) {
+                        await this.checkAdminStatus();
+                        if (!this.isAdmin) {
+                            await this.loadUserProfile();
+                        }
+                    } else {
+                        this.userProfile = null;
+                        this.isAdmin = false;
+                    }
+                    this.updateUI();
+                });
+            }
+
+            async loadUserProfile() {
+                if (!this.currentUser || this.isAdmin) return;
+                try {
+                    const snapshot = await database.ref(`elearningUsers/${this.currentUser.uid}`).once('value');
+                    this.userProfile = snapshot.val();
+                } catch (error) { console.error('Error loading user profile:', error); }
+            }
+
+            async checkAdminStatus() {
+                if (!this.currentUser) return;
+                this.isAdmin = this.adminEmails.includes(this.currentUser.email);
+                body.classList.toggle('admin-mode', this.isAdmin);
+                if (this.isAdmin) {
+                    await loadAdminData();
+                }
+            }
+            
+            async loginStudent(email, password) {
+                try {
+                    await auth.signInWithEmailAndPassword(email, password);
+                    this.justLoggedIn = true;
+                    return { success: true };
+                } catch (error) {
+                    console.error('Login error:', error);
+                    throw error;
+                }
+            }
+            
+            async registerStudent(formData) {
+                // Placeholder for registration logic
+                console.log("Registering student:", formData);
+                throw new Error("La registrazione non è ancora implementata completamente.");
+            }
+
+            updateUI() {
+                const studentLoginBtn = document.getElementById('student-login-btn');
+                const adminLoginBtn = document.getElementById('admin-login-btn');
+
+                if (this.currentUser) {
+                    const displayName = this.isAdmin ? 'Admin' : (this.userProfile?.personalInfo?.firstName || this.currentUser.email);
+                    studentLoginBtn.innerHTML = `<i class="fas fa-user"></i> ${displayName}`;
+                    studentLoginBtn.onclick = () => auth.signOut();
+                    
+                    if (this.isAdmin) {
+                        adminLoginBtn.innerHTML = `<i class="fas fa-cogs"></i> Pannello`;
+                        adminLoginBtn.onclick = () => switchPage('administration');
+                    }
+                    
+                    if (this.justLoggedIn) {
+                         if (this.isAdmin) {
+                             alert("Benvenuto, Amministratore!");
+                         } else if (this.userProfile?.accountStatus?.status === 'approved') {
+                             alert("Login effettuato con successo!");
+                         } else {
+                             alert("Il tuo account è in attesa di approvazione o non è autorizzato per questa piattaforma.");
+                             auth.signOut();
+                         }
+                         this.justLoggedIn = false;
+                    }
+                } else {
+                    studentLoginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Accedi';
+                    studentLoginBtn.onclick = () => openModal(document.getElementById('login-modal'));
+                    
+                    if (adminLoginBtn) {
+                        adminLoginBtn.innerHTML = '<i class="fas fa-user-shield"></i> Admin';
+                        adminLoginBtn.onclick = () => openModal(document.getElementById('login-modal'));
+                    }
+                    body.classList.remove('admin-mode');
+                }
+            }
+        }
+        const elearningAuth = new ELearningAuth();
+
+        // --- COURSE MANAGEMENT SYSTEM ---
+        class CourseManager {
+            constructor() { this.currentCourse = null; }
+            async initialize() { this.setupCourseEventListeners(); }
+            setupCourseEventListeners() {
+                document.addEventListener('click', (e) => {
+                    if (e.target.matches('.enroll-btn')) this.enrollInCourse(e.target.dataset.courseId);
+                });
+            }
+            async enrollInCourse(courseId) {
+                if (!elearningAuth.currentUser) {
+                    alert('Devi accedere per iscriverti.');
+                    openModal(loginModal);
+                    return;
+                }
+                alert(`Iscrizione al corso ${courseId} in corso... (logica da implementare)`);
+            }
+            async loadUserCourses() { console.log("Loading user courses..."); }
+        }
+        const courseManager = new CourseManager();
+
+        // --- ADMIN PANEL SYSTEM ---
+        class AdminPanel {
+            constructor() {}
+            async initialize() { console.log("Admin Panel Initialized"); }
+        }
+        const adminPanel = new AdminPanel();
+
         // --- CORE APPLICATION LOGIC ---
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeApp();
-        });
-
-        // --- INITIALIZATION AND SETUP ---
+        document.addEventListener('DOMContentLoaded', initializeApp);
 
         async function initializeApp() {
-            // 1. Assign DOM variables
             body = document.body;
             studentLoginBtn = document.getElementById('student-login-btn');
             adminLoginBtn = document.getElementById('admin-login-btn');
             loginModal = document.getElementById('login-modal');
             registrationModal = document.getElementById('registration-modal');
 
-            // 2. Setup event listeners for static elements
-            if (adminLoginBtn) {
-                adminLoginBtn.addEventListener('click', () => openModal(loginModal));
-            }
+            if (adminLoginBtn) adminLoginBtn.addEventListener('click', () => openModal(loginModal));
 
-            // 3. Run all setup functions
             setupNavigation();
             setupModals();
             setupCourseFilters();
             
-            // 4. Initialize core systems
             await elearningAuth.initialize();
             await courseManager.initialize();
 
-            // 5. Connect forms now that systems are ready
             setupFormHandlers();
-
-            // 6. Load public data
             await loadPublicData();
             
             console.log('Piattaforma E-Learning inizializzata correttamente.');
         }
-        
+
+        // --- SETUP FUNCTIONS ---
         function setupNavigation() {
             document.querySelectorAll('.sidebar ul li a').forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    const target = e.currentTarget.getAttribute('data-target');
-                    switchPage(target);
+                    switchPage(e.currentTarget.getAttribute('data-target'));
                 });
             });
         }
 
         function setupModals() {
-            document.querySelectorAll('.close-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    closeModal(e.currentTarget.closest('.modal'));
-                });
-            });
+            document.querySelectorAll('.close-btn').forEach(btn => btn.addEventListener('click', (e) => closeModal(e.currentTarget.closest('.modal'))));
             document.querySelectorAll('.modal').forEach(modal => {
                 modal.addEventListener('click', (e) => {
-                    if (e.target === modal || e.target.classList.contains('modal-content-wrapper')) {
-                        closeModal(modal);
-                    }
+                    if (e.target === modal) closeModal(modal);
                 });
             });
-            document.getElementById('show-register-form').addEventListener('click', (e) => {
-                e.preventDefault();
-                closeModal(loginModal);
-                openModal(registrationModal);
-            });
-            document.getElementById('show-login-form').addEventListener('click', (e) => {
-                e.preventDefault();
-                closeModal(registrationModal);
-                openModal(loginModal);
-            });
+            document.getElementById('show-register-form').addEventListener('click', (e) => { e.preventDefault(); closeModal(loginModal); openModal(registrationModal); });
+            document.getElementById('show-login-form').addEventListener('click', (e) => { e.preventDefault(); closeModal(registrationModal); openModal(loginModal); });
         }
 
         function setupCourseFilters() {
             const difficultyFilter = document.getElementById('difficulty-filter');
             const categoryFilter = document.getElementById('category-filter');
             const searchInput = document.getElementById('search-courses');
-
             const applyFilters = () => {
-                const difficulty = difficultyFilter.value;
-                const category = categoryFilter.value;
-                const searchTerm = searchInput.value.toLowerCase();
-                
-                console.log(`Filtri applicati: Difficoltà: ${difficulty || 'Tutte'}, Categoria: ${category || 'Tutte'}, Ricerca: ${searchTerm}`);
-
-                // Future logic to filter course cards goes here.
+                const filters = {
+                    difficulty: difficultyFilter.value,
+                    category: categoryFilter.value,
+                    searchTerm: searchInput.value.toLowerCase()
+                };
+                console.log("Applicando filtri:", filters);
+                // Future filtering logic goes here
             };
-
             if (difficultyFilter) difficultyFilter.addEventListener('change', applyFilters);
             if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
             if (searchInput) searchInput.addEventListener('input', applyFilters);
@@ -994,9 +1097,8 @@
                 try {
                     await elearningAuth.loginStudent(email, password);
                     closeModal(loginModal);
-                    alert('Login effettuato con successo!');
                 } catch (error) {
-                    alert('Errore durante il login: ' + error.message);
+                    alert('Errore login: ' + error.message);
                 }
             });
 
@@ -1012,10 +1114,10 @@
                 try {
                     await elearningAuth.registerStudent(formData);
                     closeModal(registrationModal);
-                    alert('Richiesta inviata! Riceverai una email di conferma all\'approvazione.');
+                    alert('Richiesta inviata!');
                     e.target.reset();
                 } catch (error) {
-                    alert('Errore di registrazione: ' + error.message);
+                    alert('Errore registrazione: ' + error.message);
                 }
             });
         }
@@ -1027,18 +1129,14 @@
             }
         }
         
-        // --- HELPER AND UTILITY FUNCTIONS ---
-
+        // --- HELPER & UI FUNCTIONS ---
         function switchPage(targetId) {
-            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            document.querySelectorAll('.sidebar ul li a').forEach(link => link.classList.remove('active'));
-            
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
             const targetPage = document.getElementById(targetId + '-page');
-            if (targetPage) targetPage.classList.add('active');
-            
             const targetLink = document.querySelector(`a[data-target="${targetId}"]`);
+            if (targetPage) targetPage.classList.add('active');
             if (targetLink) targetLink.classList.add('active');
-            
             window.scrollTo(0, 0);
         }
 
@@ -1058,15 +1156,11 @@
 
         function openCourseCreator() {
             const modal = document.getElementById('course-creator-modal');
-            if (modal) {
-                openModal(modal);
-            } else {
-                console.error('Modal per la creazione del corso non trovato.');
-            }
+            if (modal) openModal(modal);
+            else console.error('Modal per la creazione del corso non trovato.');
         }
 
         // --- DATA LOADING FUNCTIONS ---
-        
         async function loadPublicData() {
             await loadCoursesCatalog();
             if (elearningAuth.currentUser) {
@@ -1084,15 +1178,14 @@
         async function loadCoursesCatalog() {
             const container = document.getElementById('catalog-courses-container');
             if (!container) return;
-            // Example data, replace with Firebase call
             const sampleCourses = [
-                { id: 'course1', title: 'Educazione di Base del Cane', description: 'Impara i fondamenti dell\'educazione canina.', difficulty: 'beginner', category: 'education', thumbnail: '/images/corso-base-educazione.jpg', lessons: 8 },
-                { id: 'course2', title: 'Agility per Principianti', description: 'Introduzione al mondo dell\'agility.', difficulty: 'intermediate', category: 'agility', thumbnail: '/images/corso-agility.jpg', lessons: 12 }
+                { id: 'course1', title: 'Educazione di Base del Cane', description: 'Impara i fondamenti.', difficulty: 'beginner', category: 'education', thumbnail: '/images/corso-base-educazione.jpg', lessons: 8 },
+                { id: 'course2', title: 'Agility per Principianti', description: 'Introduzione all\'agility.', difficulty: 'intermediate', category: 'agility', thumbnail: '/images/corso-agility.jpg', lessons: 12 }
             ];
-            container.innerHTML = sampleCourses.map(createCourseCard).join('');
+            container.innerHTML = sampleCourses.map(createCourseCardHTML).join('');
         }
 
-        function createCourseCard(course) {
+        function createCourseCardHTML(course) {
             return `
                 <div class="course-card" data-difficulty="${course.difficulty}" data-category="${course.category}">
                     <img src="${course.thumbnail}" alt="${course.title}" class="course-thumbnail">
@@ -1112,44 +1205,10 @@
             `;
         }
         
-        // All other classes like ELearningAuth, CourseManager, AdminPanel, QuizSystem, etc.
-        // should be placed here, just as they were in the original file.
-        // For brevity, I am omitting them here, but they should be copied
-        // from your original file into this single script block.
-
-        // Placeholder for classes (copy them from your file)
-        class ELearningAuth { /* ... Your full class code ... */ 
-            constructor() { this.currentUser = null; this.isAdmin = false; this.userProfile = null; this.adminEmails = ADMIN_EMAILS; }
-            async initialize() { auth.onAuthStateChanged(async (user) => { this.currentUser = user; if (user) { await this.checkAdminStatus(); await this.loadUserProfile(); } else { this.userProfile = null; this.isAdmin = false; } this.updateUI(); }); }
-            async loadUserProfile() { if (!this.currentUser || this.isAdmin) return; try { const snapshot = await database.ref(`elearningUsers/${this.currentUser.uid}`).once('value'); this.userProfile = snapshot.val(); } catch (error) { console.error('Error loading user profile:', error); } }
-            async checkAdminStatus() { if (!this.currentUser) return; this.isAdmin = this.adminEmails.includes(this.currentUser.email); body.classList.toggle('admin-mode', this.isAdmin); if(this.isAdmin) await loadAdminData(); }
-            async registerStudent(formData) { /* ... Your full registration logic ... */ }
-            async loginStudent(email, password) { /* ... Your full login logic ... */ }
-            updateUI() { /* ... Your full UI update logic ... */ }
-        }
-        class CourseManager { /* ... Your full class code ... */ 
-            constructor() { this.currentCourse = null; }
-            async initialize() { this.setupCourseEventListeners(); }
-            setupCourseEventListeners() { document.addEventListener('click', (e) => { if (e.target.matches('.enroll-btn')) { this.enrollInCourse(e.target.dataset.courseId); }}); }
-            async enrollInCourse(courseId) { if (!elearningAuth.currentUser) { alert('Devi accedere per iscriverti.'); openModal(loginModal); return; } console.log(`Enrolling in ${courseId}`); }
-            async loadUserCourses() { console.log("Loading user courses...");}
-        }
-        class AdminPanel { /* ... Your full class code ... */ 
-            constructor() {}
-            async initialize() { console.log("Admin Panel Initialized"); }
-        }
-        
-        const elearningAuth = new ELearningAuth();
-        const courseManager = new CourseManager();
-        const adminPanel = new AdminPanel();
-
         async function loadRegistrationRequests() {
             if (!elearningAuth.isAdmin) return;
             const container = document.getElementById('registration-requests-container');
-            if (!container) return;
-            // Simplified logic for example
-            container.innerHTML = '<p>Caricamento richieste...</p>';
-            console.log("Loading registration requests...");
+            if(container) container.innerHTML = '<p>Caricamento richieste in attesa...</p>';
         }
 
     </script>
