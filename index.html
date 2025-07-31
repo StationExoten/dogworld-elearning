@@ -1193,37 +1193,89 @@
         // Riscrivi le variabili globali in questo modo
 let body, studentLoginBtn, adminLoginBtn, loginModal, registrationModal;
 
-async function initializeApp() {
-    // 1. Assegna le variabili DOM ora che la pagina è caricata
-    body = document.body;
-    studentLoginBtn = document.getElementById('student-login-btn');
-    adminLoginBtn = document.getElementById('admin-login-btn');
-    loginModal = document.getElementById('login-modal');
-    registrationModal = document.getElementById('registration-modal');
-    
-    if (adminLoginBtn) {
+    // --- NUOVA FUNZIONE PER I FILTRI ---
+    function setupCourseFilters() {
+        const difficultyFilter = document.getElementById('difficulty-filter');
+        const categoryFilter = document.getElementById('category-filter');
+        const searchInput = document.getElementById('search-courses');
+
+        const applyFilters = () => {
+            const difficulty = difficultyFilter.value;
+            const category = categoryFilter.value;
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            // Logica di esempio: mostra un alert per confermare
+            alert(`Filtri applicati:\nDifficoltà: ${difficulty || 'Tutte'}\nCategoria: ${category || 'Tutte'}\nRicerca: ${searchTerm}`);
+
+            // Qui andrà la logica effettiva per nascondere/mostrare le card dei corsi
+            // Esempio:
+            // document.querySelectorAll('#catalog-courses-container .course-card').forEach(card => {
+            //     const cardDifficulty = card.dataset.difficulty;
+            //     const cardCategory = card.dataset.category;
+            //     const cardTitle = card.querySelector('.course-title').textContent.toLowerCase();
+            //     
+            //     const difficultyMatch = !difficulty || cardDifficulty === difficulty;
+            //     const categoryMatch = !category || cardCategory === category;
+            //     const searchMatch = cardTitle.includes(searchTerm);
+            //
+            //     if (difficultyMatch && categoryMatch && searchMatch) {
+            //         card.style.display = 'block';
+            //     } else {
+            //         card.style.display = 'none';
+            //     }
+            // });
+        };
+
+        if (difficultyFilter) difficultyFilter.addEventListener('change', applyFilters);
+        if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
+        if (searchInput) searchInput.addEventListener('input', applyFilters);
+    }
+
+    // --- NUOVA FUNZIONE PER IL CREATORE DI CORSI ---
+    function openCourseCreator() {
+        const modal = document.getElementById('course-creator-modal');
+        if (modal) {
+            openModal(modal);
+            // Qui potresti aggiungere la logica per caricare file da Google Drive se necessario
+            // Esempio: driveManager.getFolders().then(folders => console.log(folders));
+        } else {
+            console.error('Modal per la creazione del corso non trovato.');
+        }
+    }
+
+    // --- FUNZIONE INITIALIZEAPP CORRETTA E COMPLETA ---
+    async function initializeApp() {
+        // 1. Assegna le variabili DOM ora che la pagina è caricata
+        body = document.body;
+        studentLoginBtn = document.getElementById('student-login-btn');
+        adminLoginBtn = document.getElementById('admin-login-btn');
+        loginModal = document.getElementById('login-modal');
+        registrationModal = document.getElementById('registration-modal');
+
+        // Aggiunge la funzionalità mancante al tasto admin
+        if (adminLoginBtn) {
             adminLoginBtn.addEventListener('click', () => openModal(loginModal));
         }
-    
-    // 2. Esegui le inizializzazioni di base
-    setupNavigation();
-    setupModals();
 
-    // 3. Inizializza i sistemi avanzati (autenticazione e corsi)
-    await elearningAuth.initialize(); // Questo gestisce l'UI dei pulsanti
-    await courseManager.initialize();
+        // 2. Esegui le inizializzazioni di base
+        setupNavigation();
+        setupModals();
+        setupCourseFilters(); // Chiama la nuova funzione per attivare i filtri
 
-    // 4. Collega i form dopo che tutto è pronto
-    setupFormHandlers();
+        // 3. Inizializza i sistemi avanzati (autenticazione e corsi)
+        await elearningAuth.initialize(); // Questo gestisce l'UI dei pulsanti
+        await courseManager.initialize();
 
-    // 5. Carica i dati pubblici
-    await loadPublicData();
-    
-    console.log('Piattaforma E-Learning inizializzata correttamente.');
-}
+        // 4. Collega i form dopo che tutto è pronto
+        setupFormHandlers();
 
-        function setupNavigation() {
-            // Navigation click handlers
+        // 5. Carica i dati pubblici
+        await loadPublicData();
+        
+        console.log('Piattaforma E-Learning inizializzata correttamente.');
+    }
+
+        function setupNavigation() {         // Navigation click handlers
             document.querySelectorAll('.sidebar ul li a').forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
