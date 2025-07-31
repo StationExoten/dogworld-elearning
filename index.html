@@ -1289,7 +1289,7 @@
 
             // Admin login button (redirect to main site admin)
             adminLoginBtn.addEventListener('click', () => {
-                window.open('https://ilmondodelcane.net', '_blank');
+                openModal(loginModal);
             });
 
             // Student login form
@@ -2532,7 +2532,7 @@ updateUI() {
         if(adminLoginBtn) {
              adminLoginBtn.onclick = null;
              adminLoginBtn.addEventListener('click', () => {
-                 window.open('https://ilmondodelcane.net', '_blank');
+                 openModal(loginModal);
              }, { once: true });
         }
         // ▲▲▲ FINE DELLA MODIFICA ▲▲▲
