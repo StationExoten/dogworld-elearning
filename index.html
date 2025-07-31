@@ -5916,29 +5916,31 @@
             }
 
             setupScrollEffects() {
-                let lastScrollTop = 0;
-                const header = document.querySelector('.header');
-                
-                window.addEventListener('scroll', () => {
-                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                    
-                    // Header hide/show on scroll
-                    if (scrollTop > lastScrollTop && scrollTop > 100) {
-                        header.style.transform = 'translateY(-100%)';
-                    } else {
-                        header.style.transform = 'translateY(0)';
-                    }
-                    
-                    lastScrollTop = scrollTop;
-                    
-                    // Add shadow to header when scrolled
-                    if (scrollTop > 50) {
-                        header.style.boxShadow = 'var(--shadow-xl)';
-                    } else {
-                        header.style.boxShadow = 'var(--shadow-lg)';
-                    }
-                });
-            }
+    /* <-- Aggiungi questo
+    let lastScrollTop = 0;
+    const header = document.querySelector('.header');
+    
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Header hide/show on scroll
+        if (scrollTop > lastScrollTop && scrollTop > 100) {
+            header.style.transform = 'translateY(-100%)';
+        } else {
+            header.style.transform = 'translateY(0)';
+        }
+        
+        lastScrollTop = scrollTop;
+        
+        // Add shadow to header when scrolled
+        if (scrollTop > 50) {
+            header.style.boxShadow = 'var(--shadow-xl)';
+        } else {
+            header.style.boxShadow = 'var(--shadow-lg)';
+        }
+    });
+    */ // <-- Aggiungi questo
+}
 
             setupHoverEffects() {
                 // Enhanced card hover effects
