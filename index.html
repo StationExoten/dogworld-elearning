@@ -2501,27 +2501,43 @@
                 }
             }
 
-            updateUI() {
-                const studentLoginBtn = document.getElementById('student-login-btn');
-                
-                if (this.currentUser && this.userProfile) {
-                    // User is logged in and has valid profile
-                    const displayName = this.userProfile.personalInfo.firstName || this.currentUser.email;
-                    studentLoginBtn.innerHTML = `<i class="fas fa-user"></i> ${displayName}`;
-                    studentLoginBtn.onclick = () => this.showUserMenu();
-                    
-                    // Show user-specific content
-                    this.loadUserDashboard();
-                } else if (this.currentUser) {
-                    // User is logged in but no e-learning profile
-                    studentLoginBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Account non autorizzato';
-                    studentLoginBtn.onclick = () => auth.signOut();
-                } else {
-                    // User is not logged in
-                    studentLoginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Accedi';
-                    studentLoginBtn.onclick = () => openModal(loginModal);
-                }
-            }
+            // All'interno della classe ELearningAuth
+updateUI() {
+    const studentLoginBtn = document.getElementById('student-login-btn');
+    
+    if (this.currentUser && this.userProfile) {
+        // ... (il codice per quando l'utente è loggato va bene così com'è)
+        const displayName = this.userProfile.personalInfo.firstName || this.currentUser.email;
+        studentLoginBtn.innerHTML = `<i class="fas fa-user"></i> ${displayName}`;
+        studentLoginBtn.onclick = () => this.showUserMenu();
+        // ...
+    } else if (this.currentUser) {
+        // ... (anche questo va bene)
+        studentLoginBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Account non autorizzato';
+        studentLoginBtn.onclick = () => auth.signOut();
+    } else {
+        // ▼▼▼ QUESTA È LA PARTE DA MODIFICARE ▼▼▼
+
+        // User is not logged in
+        studentLoginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Accedi';
+        
+        // Rimuoviamo il vecchio .onclick per sicurezza e usiamo un listener più robusto
+        studentLoginBtn.onclick = null; 
+        studentLoginBtn.addEventListener('click', () => {
+            openModal(document.getElementById('login-modal'));
+        }, { once: true }); // { once: true } è una sicurezza per evitare listener multipli
+
+        // Aggiungiamo qui anche la logica per il pulsante Admin
+        const adminLoginBtn = document.getElementById('admin-login-btn');
+        if(adminLoginBtn) {
+             adminLoginBtn.onclick = null;
+             adminLoginBtn.addEventListener('click', () => {
+                 window.open('https://ilmondodelcane.net', '_blank');
+             }, { once: true });
+        }
+        // ▲▲▲ FINE DELLA MODIFICA ▲▲▲
+    }
+}
 
             showUserMenu() {
                 const menu = document.createElement('div');
@@ -6000,19 +6016,21 @@
             }
 
             setupSmoothScrolling() {
-                document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                    anchor.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        const target = document.querySelector(this.getAttribute('href'));
-                        if (target) {
-                            target.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'start'
-                            });
-                        }
-                    });
+    /*
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
                 });
             }
+        });
+    });
+    */
+}
 
             setupParallaxEffects() {
                 const parallaxElements = document.querySelectorAll('[data-parallax]');
