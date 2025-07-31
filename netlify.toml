@@ -5,7 +5,7 @@
   functions = "netlify/functions"
   # ATTENZIONE: Questa riga presume che il tuo index.html sia in una cartella "public".
   # Se il tuo index.html è nella cartella principale (root), devi cancellare la riga seguente.
-  publish = "public"
+  publish = "."
 
 [functions]
   # ISTRUZIONE CHIAVE: Aggiungi questa riga per risolvere l'errore "Cannot find module".
