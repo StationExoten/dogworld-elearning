@@ -1183,33 +1183,40 @@
         let currentUser = null;
         let isAdmin = false;
 
-        // DOM elements
-        const body = document.body;
-        const studentLoginBtn = document.getElementById('student-login-btn');
-        const adminLoginBtn = document.getElementById('admin-login-btn');
-        const loginModal = document.getElementById('login-modal');
-        const registrationModal = document.getElementById('registration-modal');
+        
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
         });
 
-        async function initializeApp() {
-            // Set up navigation
-            setupNavigation();
-            
-            // Set up modals
-            setupModals();
-            
-            // Set up authentication
-            setupAuthentication();
-            
-            // Load initial data
-            await loadPublicData();
-            
-            console.log('E-Learning platform initialized');
-        }
+        // Riscrivi le variabili globali in questo modo
+let body, studentLoginBtn, adminLoginBtn, loginModal, registrationModal;
+
+async function initializeApp() {
+    // 1. Assegna le variabili DOM ora che la pagina è caricata
+    body = document.body;
+    studentLoginBtn = document.getElementById('student-login-btn');
+    adminLoginBtn = document.getElementById('admin-login-btn');
+    loginModal = document.getElementById('login-modal');
+    registrationModal = document.getElementById('registration-modal');
+
+    // 2. Esegui le inizializzazioni di base
+    setupNavigation();
+    setupModals();
+
+    // 3. Inizializza i sistemi avanzati (autenticazione e corsi)
+    await elearningAuth.initialize(); // Questo gestisce l'UI dei pulsanti
+    await courseManager.initialize();
+
+    // 4. Collega i form dopo che tutto è pronto
+    setupFormHandlers();
+
+    // 5. Carica i dati pubblici
+    await loadPublicData();
+    
+    console.log('Piattaforma E-Learning inizializzata correttamente.');
+}
 
         function setupNavigation() {
             // Navigation click handlers
@@ -2635,26 +2642,7 @@ updateUI() {
         // Initialize enhanced authentication system
         const elearningAuth = new ELearningAuth();
 
-        // Update the existing initialization
-        async function initializeApp() {
-            // Set up navigation
-            setupNavigation();
-            
-            // Set up modals
-            setupModals();
-            
-            // Initialize enhanced authentication
-            await elearningAuth.initialize();
-            
-            // Set up form handlers
-            setupFormHandlers();
-            
-            // Load initial data
-            await loadPublicData();
-            
-            console.log('E-Learning platform initialized with enhanced authentication');
-        }
-
+        
         function setupFormHandlers() {
             // Enhanced student login form
             document.getElementById('student-login-form').addEventListener('submit', async (e) => {
@@ -4345,29 +4333,7 @@ updateUI() {
         // Initialize course manager
         const courseManager = new CourseManager();
 
-        // Update the existing initializeApp function
-        async function initializeApp() {
-            // Set up navigation
-            setupNavigation();
-            
-            // Set up modals
-            setupModals();
-            
-            // Initialize enhanced authentication
-            await elearningAuth.initialize();
-            
-            // Initialize course manager
-            await courseManager.initialize();
-            
-            // Set up form handlers
-            setupFormHandlers();
-            
-            // Load initial data
-            await loadPublicData();
-            
-            console.log('E-Learning platform initialized with course management');
-        }
-    </script>
+            </script>
 
 
     <!-- Advanced Quiz and Interactive System -->
