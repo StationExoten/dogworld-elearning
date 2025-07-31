@@ -1200,7 +1200,11 @@ async function initializeApp() {
     adminLoginBtn = document.getElementById('admin-login-btn');
     loginModal = document.getElementById('login-modal');
     registrationModal = document.getElementById('registration-modal');
-
+    
+    if (adminLoginBtn) {
+            adminLoginBtn.addEventListener('click', () => openModal(loginModal));
+        }
+    
     // 2. Esegui le inizializzazioni di base
     setupNavigation();
     setupModals();
