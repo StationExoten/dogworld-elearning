@@ -1194,42 +1194,45 @@
 let body, studentLoginBtn, adminLoginBtn, loginModal, registrationModal;
 
     // --- NUOVA FUNZIONE PER I FILTRI ---
-    function setupCourseFilters() {
-        const difficultyFilter = document.getElementById('difficulty-filter');
-        const categoryFilter = document.getElementById('category-filter');
-        const searchInput = document.getElementById('search-courses');
+    // --- NUOVO BLOCCO DI CODICE CORRETTO (SENZA POPUP) ---
 
-        const applyFilters = () => {
-            const difficulty = difficultyFilter.value;
-            const category = categoryFilter.value;
-            const searchTerm = searchInput.value.toLowerCase();
-            
-            // Logica di esempio: mostra un alert per confermare
-            alert(`Filtri applicati:\nDifficoltà: ${difficulty || 'Tutte'}\nCategoria: ${category || 'Tutte'}\nRicerca: ${searchTerm}`);
+function setupCourseFilters() {
+    const difficultyFilter = document.getElementById('difficulty-filter');
+    const categoryFilter = document.getElementById('category-filter');
+    const searchInput = document.getElementById('search-courses');
 
-            // Qui andrà la logica effettiva per nascondere/mostrare le card dei corsi
-            // Esempio:
-            // document.querySelectorAll('#catalog-courses-container .course-card').forEach(card => {
-            //     const cardDifficulty = card.dataset.difficulty;
-            //     const cardCategory = card.dataset.category;
-            //     const cardTitle = card.querySelector('.course-title').textContent.toLowerCase();
-            //     
-            //     const difficultyMatch = !difficulty || cardDifficulty === difficulty;
-            //     const categoryMatch = !category || cardCategory === category;
-            //     const searchMatch = cardTitle.includes(searchTerm);
-            //
-            //     if (difficultyMatch && categoryMatch && searchMatch) {
-            //         card.style.display = 'block';
-            //     } else {
-            //         card.style.display = 'none';
-            //     }
-            // });
-        };
+    const applyFilters = () => {
+        const difficulty = difficultyFilter.value;
+        const category = categoryFilter.value;
+        const searchTerm = searchInput.value.toLowerCase();
+        
+        // L'alert è stato rimosso. Ora i filtri non faranno nulla di visibile.
+        // I messaggi qui sotto appaiono solo nella console per sviluppatori (invisibile agli utenti).
+        console.log(`Filtri applicati: Difficoltà: ${difficulty || 'Tutte'}, Categoria: ${category || 'Tutte'}, Ricerca: ${searchTerm}`);
 
-        if (difficultyFilter) difficultyFilter.addEventListener('change', applyFilters);
-        if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
-        if (searchInput) searchInput.addEventListener('input', applyFilters);
-    }
+        // In futuro, qui potrai inserire la logica per filtrare i corsi visivamente.
+        // Esempio:
+        // document.querySelectorAll('#catalog-courses-container .course-card').forEach(card => {
+        //     const cardDifficulty = card.dataset.difficulty;
+        //     const cardCategory = card.dataset.category;
+        //     const cardTitle = card.querySelector('.course-title').textContent.toLowerCase();
+        //     
+        //     const difficultyMatch = !difficulty || cardDifficulty === difficulty;
+        //     const categoryMatch = !category || cardCategory === category;
+        //     const searchMatch = cardTitle.includes(searchTerm);
+        //
+        //     if (difficultyMatch && categoryMatch && searchMatch) {
+        //         card.style.display = 'block';
+        //     } else {
+        //         card.style.display = 'none';
+        //     }
+        // });
+    };
+
+    if (difficultyFilter) difficultyFilter.addEventListener('change', applyFilters);
+    if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
+    if (searchInput) searchInput.addEventListener('input', applyFilters);
+}
 
     // --- NUOVA FUNZIONE PER IL CREATORE DI CORSI ---
     function openCourseCreator() {
