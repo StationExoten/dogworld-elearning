@@ -1288,33 +1288,7 @@ async function initializeApp() {
             });
         }
 
-        function setupAuthentication() {
-            // Student login button
-            studentLoginBtn.addEventListener('click', () => {
-                openModal(loginModal);
-            });
-
-            // Admin login button (redirect to main site admin)
-            adminLoginBtn.addEventListener('click', () => {
-                openModal(loginModal);
-            });
-
-            // Student login form
-            document.getElementById('student-login-form').addEventListener('submit', handleStudentLogin);
-
-            // Student registration form
-            document.getElementById('student-registration-form').addEventListener('submit', handleStudentRegistration);
-
-            // Auth state change listener
-            auth.onAuthStateChanged(async (user) => {
-                currentUser = user;
-                if (user) {
-                    await checkUserRole(user);
-                    await loadUserProfile(user);
-                }
-                updateUIForAuthState();
-            });
-        }
+        
 
         async function checkUserRole(user) {
             // Check if user is admin by email
@@ -2509,40 +2483,34 @@ async function initializeApp() {
             }
 
             // All'interno della classe ELearningAuth
+// Sostituisci la tua funzione updateUI() con questa
 updateUI() {
     const studentLoginBtn = document.getElementById('student-login-btn');
-    
+    const adminLoginBtn = document.getElementById('admin-login-btn');
+
     if (this.currentUser && this.userProfile) {
-        // ... (il codice per quando l'utente è loggato va bene così com'è)
+        // User is logged in and has valid profile
         const displayName = this.userProfile.personalInfo.firstName || this.currentUser.email;
         studentLoginBtn.innerHTML = `<i class="fas fa-user"></i> ${displayName}`;
         studentLoginBtn.onclick = () => this.showUserMenu();
-        // ...
+        // In modalità admin, il pulsante admin potrebbe fare altro, per ora lo lasciamo così
+        if (adminLoginBtn) adminLoginBtn.style.display = 'block';
+
     } else if (this.currentUser) {
-        // ... (anche questo va bene)
+        // User is logged in but no e-learning profile
         studentLoginBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Account non autorizzato';
         studentLoginBtn.onclick = () => auth.signOut();
-    } else {
-        // ▼▼▼ QUESTA È LA PARTE DA MODIFICARE ▼▼▼
+        if (adminLoginBtn) adminLoginBtn.style.display = 'block';
 
+    } else {
         // User is not logged in
         studentLoginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Accedi';
+        studentLoginBtn.onclick = () => openModal(document.getElementById('login-modal'));
         
-        // Rimuoviamo il vecchio .onclick per sicurezza e usiamo un listener più robusto
-        studentLoginBtn.onclick = null; 
-        studentLoginBtn.addEventListener('click', () => {
-            openModal(document.getElementById('login-modal'));
-        }, { once: true }); // { once: true } è una sicurezza per evitare listener multipli
-
-        // Aggiungiamo qui anche la logica per il pulsante Admin
-        const adminLoginBtn = document.getElementById('admin-login-btn');
-        if(adminLoginBtn) {
-             adminLoginBtn.onclick = null;
-             adminLoginBtn.addEventListener('click', () => {
-                 openModal(loginModal);
-             }, { once: true });
+        if (adminLoginBtn) {
+            adminLoginBtn.innerHTML = '<i class="fas fa-user-shield"></i> Admin';
+            adminLoginBtn.onclick = () => openModal(document.getElementById('login-modal'));
         }
-        // ▲▲▲ FINE DELLA MODIFICA ▲▲▲
     }
 }
 
