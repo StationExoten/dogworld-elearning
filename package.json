@@ -1,0 +1,23 @@
+{
+  "name": "dogworld-site",
+  "version": "1.0.0",
+  "description": "Website for DogWorld",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@sendgrid/mail": "^8.1.0",
+    "dayjs": "^1.11.10",
+    "faunadb": "^4.8.2",
+    "firebase-admin": "^13.4.0",
+    "google-auth-library": "^9.7.0",
+    "googleapis": "^134.0.0",
+    "nodemailer": "^6.9.7",
+    "uuid": "^9.0.1",
+    "web-push": "^3.6.7"
+  }
+}
