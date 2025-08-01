@@ -26,11 +26,11 @@
         h1, h2, h3, h4 { color: var(--primary-color); font-weight: 700; margin-bottom: 1rem; }
         p { line-height: 1.6; margin-bottom: 1rem; }
         a { color: var(--secondary-color); text-decoration: none; }
+        button { font-family: var(--font-family); }
         .page { display: none; padding: 40px; animation: fadeIn 0.5s; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Sidebar & Navigation */
         .sidebar { height: 100vh; width: 250px; position: fixed; top: 0; left: 0; background-color: var(--primary-color); color: var(--light-text); padding-top: 20px; display: flex; flex-direction: column; z-index: 100; }
         .sidebar-header { text-align: center; margin-bottom: 15px; padding: 0 10px; }
         .sidebar-header .logo { width: 200px; height: auto; margin-bottom: 10px; }
@@ -44,128 +44,91 @@
         body.admin-view .sidebar ul li[data-role="admin"],
         body.admin-view .sidebar ul li[data-role="student"] { display: list-item; }
 
-        /* Content Area */
         .content { margin-left: 250px; width: calc(100% - 250px); }
         section { margin-bottom: 40px; padding: 25px; border-radius: 8px; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: relative; }
 
-        /* Admin Mode */
         .admin-only { display: none !important; }
         body.admin-mode .admin-only { display: block !important; }
         body.admin-mode [data-editable-text]:hover { box-shadow: 0 0 0 2px var(--accent-color); cursor: text; }
-
-        /* Generic Components */
+        body.admin-mode [data-editable-text].editing-now { outline: 2px solid var(--primary-color); }
+        #text-editor-toolbar { position: absolute; z-index: 1010; background: var(--dark-text); padding: 5px 8px; border-radius: 5px; display: flex; gap: 8px; }
+        #text-editor-toolbar button { background: none; border: none; color: white; font-size: 16px; cursor: pointer; width: 30px; height: 30px; }
+        
         .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 20px; }
-        .course-card, .request-card { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); overflow: hidden; position: relative; transition: transform 0.3s, box-shadow 0.3s; }
+        .course-card, .request-card { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); overflow: hidden; position: relative; }
+        .course-card { cursor: pointer; }
         .course-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
-        .course-card .course-thumbnail { width: 100%; height: 200px; object-fit: cover; }
+        .course-card .course-thumbnail { width: 100%; height: 200px; object-fit: cover; background-color: #eee; }
         .course-card .course-content { padding: 20px; }
-        .course-card .course-title { font-size: 1.2em; margin-bottom: 10px; }
-        .btn-primary, .btn-secondary { border: none; cursor: pointer; padding: 12px 25px; border-radius: 5px; font-weight: 600; }
+        .btn-primary, .btn-secondary, .btn-danger, .btn-warning, .btn-success { border: none; cursor: pointer; padding: 12px 25px; border-radius: 5px; font-weight: 600; font-family: var(--font-family); }
         .btn-primary { background-color: var(--primary-color); color: var(--light-color); }
         .btn-secondary { background-color: #e0e0e0; color: var(--dark-text); }
         .btn-approve, .btn-reject { color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
         .btn-approve { background: var(--success-color); }
         .btn-reject { background: var(--danger-color); }
 
-        /* Modal Styles */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); }
         .modal-content-wrapper { display: flex; justify-content: center; align-items: center; min-height: 100%; padding: 20px; }
         .modal-content { background-color: #fefefe; padding: 25px; border-radius: 8px; width: 90%; max-width: 600px; position: relative; }
         .modal-content.modal-lg { max-width: 900px; }
         .modal-content.modal-xl { max-width: 1200px; }
         .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-        
-        /* Course Creator Styles */
+        .form-container input, .form-container textarea, .form-container button, .form-container select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ddd; }
+        .form-container button { background-color: var(--primary-color); color: var(--light-color); border: none; cursor: pointer; }
+
         #course-builder-list { min-height: 150px; border: 1px dashed #ccc; padding: 10px; border-radius: 5px; }
         .builder-item { display: flex; align-items: center; background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 8px; }
         .builder-item .drag-handle { cursor: move; margin-right: 15px; color: #777; }
         .builder-item-content { flex-grow: 1; }
         .builder-item-actions button { background: none; border: none; color: #999; cursor: pointer; font-size: 1em; padding: 5px; }
         #drive-file-list { max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; }
-        .drive-file-item { padding: 8px; cursor: pointer; }
+        .drive-file-item { padding: 8px; cursor: pointer; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; }
         .drive-file-item:hover { background-color: #f0f0f0; }
         .drive-file-item.selected { background-color: var(--accent-color); color: white; }
 
-        /* Course Viewer Styles */
-        #course-viewer-content .lesson-list-item.active { background-color: var(--accent-color); color: white; }
-        #video-player-container { width: 100%; background: #000; margin-bottom: 20px; }
-        #video-player-container iframe { width: 100%; height: 500px; border: none; }
-
-        /* Footer */
-        .site-footer { background: var(--primary-color); color: var(--light-text); text-align: center; padding: 20px; }
+        #video-player-container { width: 100%; background: #000; margin-bottom: 20px; aspect-ratio: 16 / 9; }
+        #video-player-container iframe { width: 100%; height: 100%; border: none; }
+        #course-viewer-layout { display: flex; gap: 20px; }
+        #course-viewer-nav { width: 300px; flex-shrink: 0; }
+        #course-viewer-main { flex-grow: 1; }
+        #course-viewer-nav .lesson-item { padding: 10px; border-radius: 5px; cursor: pointer; border: 1px solid #eee; margin-bottom: 5px; }
+        #course-viewer-nav .lesson-item.active { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+        
+        .footer { background: var(--primary-color); color: var(--light-text); text-align: center; padding: 20px; }
         #logout-btn { background: var(--danger-color); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
 
-        /* Responsive */
         @media (max-width: 992px) {
             .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; justify-content: space-between; padding: 10px; }
             .sidebar-header .logo { display: none; }
             .sidebar ul { display: flex; flex-wrap: wrap; justify-content: center; width: auto; padding: 0; }
-            .sidebar ul li { margin: 2px; }
-            .sidebar ul li a { padding: 8px 12px; }
             .content { margin-left: 0; width: 100%; }
             .page { padding: 20px; }
+            #course-viewer-layout { flex-direction: column; }
+            #course-viewer-nav { width: 100%; }
         }
     </style>
 </head>
 <body>
     <div class="page-container">
-        <!-- Sidebar Navigation -->
         <nav class="sidebar">
             <div class="sidebar-header"><img src="/images/logo-dogworld-chiaro.png" alt="DogWorld Logo" class="logo"></div>
             <ul>
                 <li data-role="guest" data-role-default><a href="#" data-target="welcome"><i class="fas fa-door-open"></i> Benvenuto</a></li>
-                <li data-role="student" data-role-default><a href="#" data-target="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li data-role="student"><a href="#" data-target="catalog"><i class="fas fa-book"></i> Catalogo Corsi</a></li>
+                <li data-role="student" data-role-default><a href="#" data-target="catalog"><i class="fas fa-book"></i> Catalogo Corsi</a></li>
+                <li data-role="student"><a href="#" data-target="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li data-role="admin" data-role-default><a href="#" data-target="administration"><i class="fas fa-users-cog"></i> Gestione Utenti</a></li>
                 <li data-role="admin"><a href="#" data-target="admin-courses"><i class="fas fa-cog"></i> Gestione Corsi</a></li>
                 <li data-role="student" data-role="admin"><a href="#" data-target="support"><i class="fas fa-life-ring"></i> Supporto</a></li>
             </ul>
         </nav>
 
-        <!-- Main Content -->
         <div class="content">
             <main class="main-content">
-                <div id="welcome-page" class="page">
-                    <section style="text-align: center;">
-                        <img src="/images/logo-dogworld-scuro.png" alt="DogWorld Logo" style="max-width: 300px; margin-bottom: 20px;">
-                        <h1 data-editable-text="welcome/title">Piattaforma E-Learning DogWorld</h1>
-                        <p data-editable-text="welcome/intro">Benvenuto nell'area dedicata alla formazione online di <a href="https://ilmondodelcane.net" target="_blank">DogWorld</a>. Qui troverai corsi professionali per approfondire le tue conoscenze cinofile.</p>
-                        <button id="welcome-login-btn" class="btn-primary">Accedi o Registrati</button>
-                    </section>
-                </div>
-
-                <div id="dashboard-page" class="page">
-                    <section><h1 data-editable-text="dashboard/title">La Tua Dashboard</h1></section>
-                </div>
-
-                <div id="catalog-page" class="page">
-                    <section><h1>Catalogo Corsi</h1><div id="catalog-grid" class="card-grid"></div></section>
-                </div>
-
-                <div id="administration-page" class="page">
-                    <section><h1 data-editable-text="admin/title">Gestione Utenti e Richieste</h1></section>
-                    <section>
-                        <h3>Richieste di Iscrizione in Attesa</h3>
-                        <div id="registration-requests-container" class="card-grid"></div>
-                    </section>
-                    <section>
-                        <h3>Studenti Approvati</h3>
-                        <div id="students-list-container"></div>
-                    </section>
-                </div>
-
-                <div id="admin-courses-page" class="page">
-                    <section>
-                        <h1>Gestione Corsi</h1>
-                        <p>Da qui puoi creare nuovi corsi o modificare quelli esistenti.</p>
-                        <button class="btn-primary admin-only" onclick="adminModule.openCourseCreator()"><i class="fas fa-plus"></i> Crea Nuovo Corso</button>
-                    </section>
-                    <section>
-                        <h3>Corsi Esistenti</h3>
-                        <div id="admin-courses-grid" class="card-grid"></div>
-                    </section>
-                </div>
-                
+                <div id="welcome-page" class="page"><section style="text-align: center;"><img src="/images/logo-dogworld-scuro.png" alt="DogWorld Logo" style="max-width: 300px; margin-bottom: 20px;"><h1 data-editable-text="welcome/title">Piattaforma E-Learning DogWorld</h1><p data-editable-text="welcome/intro">Benvenuto nell'area dedicata alla formazione online di <a href="https://ilmondodelcane.net" target="_blank">DogWorld</a>.</p><button id="welcome-login-btn" class="btn-primary">Accedi o Registrati</button></section></div>
+                <div id="dashboard-page" class="page"><section><h1 data-editable-text="dashboard/title">La Tua Dashboard</h1></section></div>
+                <div id="catalog-page" class="page"><section><h1>Catalogo Corsi</h1><div id="catalog-grid" class="card-grid"></div></section></div>
+                <div id="administration-page" class="page"><section><h1 data-editable-text="admin/title">Gestione Utenti e Richieste</h1></section><section><h3>Richieste di Iscrizione in Attesa</h3><div id="registration-requests-container" class="card-grid"></div></section><section><h3>Studenti Approvati</h3><div id="students-list-container"></div></section></div>
+                <div id="admin-courses-page" class="page"><section><h1>Gestione Corsi</h1><p>Crea nuovi corsi o modifica quelli esistenti.</p><button class="btn-primary admin-only" onclick="adminModule.openCourseCreator()"><i class="fas fa-plus"></i> Crea Nuovo Corso</button></section><section><h3>Corsi Esistenti</h3><div id="admin-courses-grid" class="card-grid"></div></section></div>
                 <div id="support-page" class="page"><section><h1>Supporto</h1></section></div>
             </main>
         </div>
@@ -175,15 +138,14 @@
     <div id="login-modal" class="modal"><div class="modal-content-wrapper"><div class="modal-content"><span class="close-btn">×</span><h3>Accesso</h3><form id="login-form" class="form-container"><input type="email" id="login-email" placeholder="Email" required><input type="password" id="login-password" placeholder="Password" required><button type="submit">Accedi</button></form><p style="text-align:center; margin-top:15px;">Non hai un account? <a href="#" id="show-register-modal-btn">Registrati</a></p></div></div></div>
     <div id="registration-modal" class="modal"><div class="modal-content-wrapper"><div class="modal-content"><span class="close-btn">×</span><h3>Richiedi Accesso</h3><form id="registration-form" class="form-container"><input type="text" id="reg-firstName" placeholder="Nome" required><input type="text" id="reg-lastName" placeholder="Cognome" required><input type="email" id="reg-email" placeholder="Email" required><input type="tel" id="reg-phone" placeholder="Telefono" required><input type="text" id="reg-associatedId" placeholder="ID Associato (Opzionale)"><button type="submit">Invia Richiesta</button></form><p style="text-align:center; margin-top:15px;">Hai già un account? <a href="#" id="show-login-modal-btn">Accedi</a></p></div></div></div>
     <div id="course-creator-modal" class="modal"><div class="modal-content-wrapper"><div class="modal-content modal-xl"><span class="close-btn">×</span><div id="course-creator-content"></div></div></div></div>
-    <div id="drive-picker-modal" class="modal"><div class="modal-content-wrapper"><div class="modal-content modal-lg"><span class="close-btn">×</span><div id="drive-picker-content"></div></div></div></div>
+    <div id="drive-picker-modal" class="modal"><div class="modal-content-wrapper"><div class="modal-content modal-lg"><span class="close-btn">×</span><h3>Seleziona File da Google Drive</h3><div id="drive-picker-content"></div></div></div></div>
     <div id="quiz-editor-modal" class="modal"><div class="modal-content-wrapper"><div class="modal-content modal-lg"><span class="close-btn">×</span><div id="quiz-editor-content"></div></div></div></div>
     <div id="course-viewer-modal" class="modal"><div class="modal-content-wrapper"><div class="modal-content modal-xl"><span class="close-btn">×</span><div id="course-viewer-content"></div></div></div></div>
+    <div id="text-editor-toolbar" style="display:none;"><button class="save-text-btn" title="Salva"><i class="fas fa-check"></i></button><button class="cancel-text-btn" title="Annulla"><i class="fas fa-times"></i></button></div>
 
     <footer class="site-footer">
         <p>© 2024 DogWorld - Il Mondo del Cane. Tutti i diritti riservati.</p>
-        <div class="footer-buttons">
-            <button id="logout-btn" style="display:none;"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </div>
+        <div class="footer-buttons"><button id="logout-btn" style="display:none;"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
     </footer>
 
     <!-- Firebase SDK & Google API -->
@@ -217,7 +179,8 @@
 
         // --- GLOBAL VARIABLES ---
         let body, loginModal, registrationModal;
-
+        let gapiInited = false, gsiInited = false, tokenClient;
+        
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', initializeApp);
 
@@ -228,6 +191,14 @@
             
             await authSystem.initialize();
             setupEventListeners();
+            
+            gapi.load('client', initializeGapiClient);
+            const script = document.createElement('script');
+            script.src = 'https://accounts.google.com/gsi/client';
+            script.async = true;
+            script.defer = true;
+            script.onload = initializeGsi;
+            document.head.appendChild(script);
         }
 
         function setupEventListeners() {
@@ -243,13 +214,10 @@
             document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
 
             document.querySelectorAll('.sidebar a').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    switchPage(e.currentTarget.getAttribute('data-target'));
-                });
+                link.addEventListener('click', (e) => { e.preventDefault(); switchPage(e.currentTarget.getAttribute('data-target')); });
             });
         }
-
+        
         // --- AUTH & USER SYSTEM ---
         const authSystem = {
             currentUser: null, isAdmin: false, userProfile: null,
@@ -262,8 +230,7 @@
                             this.isAdmin = ADMIN_EMAILS.includes(user.email);
                             if (!this.isAdmin) await this.loadUserProfile();
                         } else {
-                            this.isAdmin = false;
-                            this.userProfile = null;
+                            this.isAdmin = false; this.userProfile = null;
                         }
                         this.updateUI();
                         resolve();
@@ -279,19 +246,16 @@
             updateUI() {
                 const roles = ['guest', 'student', 'admin'];
                 roles.forEach(r => body.classList.remove(`${r}-view`));
-
                 let role = 'guest';
                 if (this.currentUser) {
                     if (this.isAdmin) role = 'admin';
-                    else if (this.userProfile && this.userProfile.accountStatus === 'approved') role = 'student';
+                    else if (this.userProfile?.accountStatus === 'approved') role = 'student';
                 }
-                
                 body.classList.add(`${role}-view`);
                 body.classList.toggle('admin-mode', this.isAdmin);
                 document.getElementById('logout-btn').style.display = this.currentUser ? 'inline-block' : 'none';
-
-                const defaultPageLink = document.querySelector(`.sidebar li[data-role="${role}"][data-role-default] a`);
-                if (defaultPageLink) switchPage(defaultPageLink.dataset.target);
+                const defaultPage = document.querySelector(`.sidebar li[data-role="${role}"][data-role-default] a`);
+                if (defaultPage) switchPage(defaultPage.dataset.target);
                 else switchPage('welcome');
 
                 if (this.isAdmin) adminModule.initialize();
@@ -317,7 +281,7 @@
                 };
                 try {
                     const newRequestRef = await database.ref('elearningRegistrationRequests').push({ ...formData, status: 'pending', timestamp: firebase.database.ServerValue.TIMESTAMP });
-                    await fetch(NETLIFY_FUNCTIONS_URL + 'send-notification', { method: 'POST', body: JSON.stringify({ type: 'new_registration', ...formData, requestId: newRequestRef.key }) });
+                    await fetch(`${NETLIFY_FUNCTIONS_URL}send-notification`, { method: 'POST', body: JSON.stringify({ type: 'new_registration', ...formData, requestId: newRequestRef.key }) });
                     alert('Richiesta inviata! Riceverai un\'email di conferma dopo l\'approvazione.');
                     closeModal(registrationModal);
                     form.reset();
@@ -325,24 +289,16 @@
             }
         };
 
-        // --- GUEST MODULE ---
-        const guestModule = {
-            initialize() { console.log("Guest view initialized"); }
-        };
-
-        // --- STUDENT MODULE ---
-        const studentModule = {
-            initialize() { console.log("Student view initialized"); }
-        };
-
-        // --- ADMIN MODULE ---
+        // --- GUEST, STUDENT, ADMIN MODULES ---
+        const guestModule = { initialize() { courseViewer.loadCourses('catalog-grid'); } };
+        const studentModule = { initialize() { courseViewer.loadCourses('catalog-grid'); } };
         const adminModule = {
             initialize() {
                 this.loadPendingRequests();
                 this.loadStudentsList();
+                this.loadCourses();
                 editableTextHandler.init();
             },
-            
             loadPendingRequests() {
                 const container = document.getElementById('registration-requests-container');
                 database.ref('elearningRegistrationRequests').orderByChild('status').equalTo('pending').on('value', snapshot => {
@@ -350,40 +306,135 @@
                     snapshot.forEach(child => container.innerHTML += this.createRequestCardHTML({ id: child.key, ...child.val() }));
                 });
             },
-
-            loadStudentsList() {
-                // Placeholder - to be expanded
-                document.getElementById('students-list-container').innerHTML = "<p>Caricamento studenti...</p>";
+            loadStudentsList() { document.getElementById('students-list-container').innerHTML = "<p>Caricamento studenti...</p>"; },
+            loadCourses() {
+                const container = document.getElementById('admin-courses-grid');
+                database.ref('elearning-courses').on('value', snapshot => {
+                    container.innerHTML = !snapshot.exists() ? '<p>Nessun corso creato.</p>' : '';
+                    snapshot.forEach(child => {
+                        const course = { id: child.key, ...child.val() };
+                        container.innerHTML += `<div class="course-card" onclick="adminModule.openCourseCreator('${course.id}')"><img src="${course.coverImage || '/images/logo-dogworld-scuro.png'}" class="course-thumbnail"><div class="course-content"><h4 class="course-title">${course.title || 'Senza Titolo'}</h4></div></div>`;
+                    });
+                });
             },
-
             createRequestCardHTML(req) {
-                return `<div class="request-card" data-id="${req.id}"><h4>${req.firstName} ${req.lastName}</h4><p><strong>Email:</strong> ${req.email}</p><p><strong>Tel:</strong> ${req.phone}</p>${req.associatedId ? `<p><strong>ID:</strong> ${req.associatedId}</p>` : ''}<div class="request-actions"><button class="btn-approve" onclick="adminModule.processRequest('${req.id}', 'approve')">Approva</button><button class="btn-reject" onclick="adminModule.processRequest('${req.id}', 'reject')">Rifiuta</button></div></div>`;
+                return `<div class="request-card" data-id="${req.id}"><h4>${req.firstName} ${req.lastName}</h4><p><strong>Email:</strong> ${req.email}</p><div class="request-actions"><button class="btn-approve" onclick="adminModule.processRequest('${req.id}', 'approve')">Approva</button><button class="btn-reject" onclick="adminModule.processRequest('${req.id}', 'reject')">Rifiuta</button></div></div>`;
             },
-            
             async processRequest(requestId, action) {
                 if (action === 'reject' && !confirm("Sei sicuro di voler rifiutare questa richiesta?")) return;
                 try {
                     const token = await auth.currentUser.getIdToken(true);
                     const response = await fetch(`${NETLIFY_FUNCTIONS_URL}manage-user-approval`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ action, requestId }) });
-                    const result = await response.json();
-                    if (!response.ok) throw new Error(result.error);
+                    if (!response.ok) throw new Error((await response.json()).error);
                     alert(`Richiesta ${action === 'approve' ? 'approvata' : 'rifiutata'}! L'utente è stato notificato.`);
                 } catch(err) { alert("Operazione fallita: " + err.message); }
             },
-
-            // Course Creator Logic
-            openCourseCreator(courseId = null) {
-                // ... Logic to open the course creator modal ...
-                const content = document.getElementById('course-creator-content');
-                content.innerHTML = `<h2>${courseId ? 'Modifica' : 'Crea'} Corso</h2> <p>Funzionalità in costruzione...</p>`;
-                openModal(document.getElementById('course-creator-modal'));
-            }
+            openCourseCreator(courseId = null) { courseBuilder.start(courseId); }
         };
         window.adminModule = adminModule;
 
+        // --- COURSE BUILDER MODULE ---
+        const courseBuilder = {
+             // Implementation here...
+        };
+        
+        // --- GOOGLE DRIVE MANAGER ---
+        const googleDriveManager = {
+            // Implementation here...
+        };
+        
+        // --- QUIZ EDITOR MODULE ---
+        const quizEditor = {
+            // Implementation here...
+        };
+
+        // --- COURSE VIEWER MODULE ---
+        const courseViewer = {
+             loadCourses(containerId) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                database.ref('elearning-courses').on('value', snapshot => {
+                    container.innerHTML = !snapshot.exists() ? '<p>Nessun corso disponibile al momento.</p>' : '';
+                    snapshot.forEach(child => {
+                        const course = { id: child.key, ...child.val() };
+                        container.innerHTML += this.createCourseCardHTML(course);
+                    });
+                });
+            },
+            createCourseCardHTML(course) {
+                const thumbnail = course.coverImage || '/images/logo-dogworld-scuro.png';
+                return `<div class="course-card" onclick="courseViewer.open('${course.id}')"><img src="${thumbnail}" class="course-thumbnail" alt="${course.title}"><div class="course-content"><h4 class="course-title">${course.title || 'Senza Titolo'}</h4></div></div>`;
+            },
+            open(courseId) {
+                alert(`Apertura corso ${courseId}... (logica da implementare)`);
+            }
+        };
+
         // --- TEXT EDITING MODULE ---
         const editableTextHandler = {
-            // ... Full implementation as provided in previous answers ...
+            currentEditingElement: null, originalContent: '',
+            
+            init() {
+                this.loadTexts();
+                document.body.addEventListener('click', (e) => {
+                    if (!body.classList.contains('admin-mode')) return;
+                    const target = e.target.closest('[data-editable-text]');
+                    if (this.currentEditingElement && !this.currentEditingElement.contains(e.target) && !document.getElementById('text-editor-toolbar').contains(e.target)) this.saveText();
+                    if (target && !target.isContentEditable) {
+                        e.preventDefault(); e.stopPropagation();
+                        this.makeTextEditable(target);
+                    }
+                }, true);
+            },
+            loadTexts() {
+                database.ref('siteContent/elearning').once('value', snapshot => {
+                    if (!snapshot.exists()) return;
+                    const content = snapshot.val();
+                    document.querySelectorAll('[data-editable-text]').forEach(el => {
+                        const path = el.dataset.editableText.split('/');
+                        let text = content;
+                        try {
+                            path.forEach(key => { text = text[key]; });
+                            if (typeof text === 'string') el.innerHTML = text;
+                        } catch (e) {}
+                    });
+                });
+            },
+            makeTextEditable(element) {
+                if (this.currentEditingElement) this.saveText();
+                this.currentEditingElement = element;
+                this.originalContent = element.innerHTML;
+                element.contentEditable = true;
+                element.classList.add('editing-now');
+                element.focus();
+                const toolbar = document.getElementById('text-editor-toolbar');
+                document.body.appendChild(toolbar);
+                const rect = element.getBoundingClientRect();
+                toolbar.style.top = `${window.scrollY + rect.top - toolbar.offsetHeight - 5}px`;
+                toolbar.style.left = `${window.scrollX + rect.left}px`;
+                toolbar.style.display = 'flex';
+                toolbar.querySelector('.save-text-btn').onclick = () => this.saveText();
+                toolbar.querySelector('.cancel-text-btn').onclick = () => this.cancelText();
+            },
+            saveText() {
+                const element = this.currentEditingElement;
+                if (!element) return;
+                const path = `siteContent/elearning/${element.dataset.editableText.replace(/\//g, '/')}`;
+                database.ref(path).set(element.innerHTML);
+                this.cleanupEditingState();
+            },
+            cancelText() {
+                if (this.currentEditingElement) this.currentEditingElement.innerHTML = this.originalContent;
+                this.cleanupEditingState();
+            },
+            cleanupEditingState() {
+                if (this.currentEditingElement) {
+                    this.currentEditingElement.contentEditable = false;
+                    this.currentEditingElement.classList.remove('editing-now');
+                }
+                document.getElementById('text-editor-toolbar').style.display = 'none';
+                this.currentEditingElement = null;
+            }
         };
 
         // --- UI HELPER FUNCTIONS ---
@@ -395,6 +446,24 @@
         }
         function openModal(modal) { if (modal) { modal.style.display = 'flex'; body.classList.add('modal-open'); } }
         function closeModal(modal) { if (modal) { modal.style.display = 'none'; body.classList.remove('modal-open'); } }
+
+        // --- GOOGLE API INITIALIZATION ---
+        async function initializeGapiClient() {
+            try {
+                await gapi.client.init({ apiKey: GOOGLE_DRIVE_CONFIG.apiKey, discoveryDocs: GOOGLE_DRIVE_CONFIG.discoveryDocs });
+                gapiInited = true;
+            } catch (error) { console.error("Error initializing GAPI client", error); }
+        }
+        function initializeGsi() {
+            try {
+                tokenClient = google.accounts.oauth2.initTokenClient({
+                    client_id: GOOGLE_DRIVE_CONFIG.clientId,
+                    scope: GOOGLE_DRIVE_CONFIG.scopes,
+                    callback: '', 
+                });
+                gsiInited = true;
+            } catch (error) { console.error("Error initializing GSI client", error); }
+        }
     </script>
 </body>
 </html>
