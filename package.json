@@ -1,32 +1,16 @@
 {
-  "name": "dogworld-site",
+  "name": "dogworld-elearning-functions",
   "version": "1.0.0",
-  "description": "Website for DogWorld",
-  "main": "index.html",
+  "description": "Serverless functions for the DogWorld E-Learning platform.",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@sendgrid/mail": "^8.1.0",
-    "dayjs": "^1.11.10",
-    "faunadb": "^4.8.2",
-    "firebase-admin": "^13.4.0",
-    "google-auth-library": "^9.7.0",
-    "googleapis": "^134.0.0",
-    "nodemailer": "^6.10.1",
-    "uuid": "^9.0.1",
-    "web-push": "^3.6.7"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/StationExoten/dogworld-elearning.git"
-  },
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/StationExoten/dogworld-elearning/issues"
-  },
-  "homepage": "https://github.com/StationExoten/dogworld-elearning#readme"
+    "firebase-admin": "^10.0.0",
+    "node-fetch": "^2.6.6",
+    "nodemailer": "^6.7.2"
+  }
 }
