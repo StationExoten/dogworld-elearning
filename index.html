@@ -92,6 +92,8 @@
         .drive-file-item:hover { background-color: #f0f0f0; }
         .drive-file-item.selected { background-color: var(--accent-color); color: white; }
         .quiz-option-group { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .quiz-option-group input[type="radio"] { width: auto; margin: 0; }
+        .quiz-option-group input[type="text"] { margin: 0; }
 
         /* Course Viewer Styles */
         #video-player-container { width: 100%; background: #000; margin-bottom: 20px; aspect-ratio: 16 / 9; }
@@ -102,9 +104,11 @@
         #course-viewer-nav .lesson-item { padding: 10px; border-radius: 5px; cursor: pointer; border: 1px solid #eee; margin-bottom: 5px; }
         #course-viewer-nav .lesson-item.active { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
         
-        .footer { background: var(--primary-color); color: var(--light-text); text-align: center; padding: 20px; }
+        /* Footer */
+        .site-footer { background: var(--primary-color); color: var(--light-text); text-align: center; padding: 20px; }
         #logout-btn { background: var(--danger-color); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
 
+        /* Responsive */
         @media (max-width: 992px) {
             .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; justify-content: space-between; padding: 10px; }
             .sidebar-header .logo { display: none; }
@@ -199,26 +203,49 @@
             await authSystem.initialize();
             setupEventListeners();
             
-            // Correctly chain GAPI/GSI initialization
+            // Robust GAPI/GSI initialization
             gapi.load('client', async () => {
-                await gapi.client.init({ apiKey: GOOGLE_DRIVE_CONFIG.apiKey, discoveryDocs: GOOGLE_DRIVE_CONFIG.discoveryDocs });
-                gapiInited = true;
+                try {
+                    await gapi.client.init({ apiKey: GOOGLE_DRIVE_CONFIG.apiKey, discoveryDocs: GOOGLE_DRIVE_CONFIG.discoveryDocs });
+                    gapiInited = true;
+                } catch (error) { console.error("Error initializing GAPI client", error); }
             });
+
             const script = document.createElement('script');
             script.src = 'https://accounts.google.com/gsi/client';
             script.async = true;
             script.defer = true;
             script.onload = () => {
-                tokenClient = google.accounts.oauth2.initTokenClient({
-                    client_id: GOOGLE_DRIVE_CONFIG.clientId,
-                    scope: GOOGLE_DRIVE_CONFIG.scopes,
-                    callback: '', 
-                });
-                gsiInited = true;
+                try {
+                    if (google && google.accounts && google.accounts.oauth2) {
+                        tokenClient = google.accounts.oauth2.initTokenClient({
+                            client_id: GOOGLE_DRIVE_CONFIG.clientId,
+                            scope: GOOGLE_DRIVE_CONFIG.scopes,
+                            callback: '', 
+                        });
+                        gsiInited = true;
+                    } else {
+                        throw new Error("Google GSI library not loaded correctly.");
+                    }
+                } catch(error) { console.error("Error initializing GSI client", error); }
             };
             document.head.appendChild(script);
         }
 
+        function setupEventListeners() {
+            document.querySelectorAll('.close-btn').forEach(btn => btn.addEventListener('click', () => closeModal(btn.closest('.modal'))));
+            document.querySelectorAll('.modal').forEach(modal => modal.addEventListener('click', (e) => { if (e.target.classList.contains('modal-content-wrapper')) closeModal(modal); }));
+            document.getElementById('show-register-modal-btn').addEventListener('click', (e) => { e.preventDefault(); closeModal(loginModal); openModal(registrationModal); });
+            document.getElementById('show-login-modal-btn').addEventListener('click', (e) => { e.preventDefault(); closeModal(registrationModal); openModal(loginModal); });
+            document.getElementById('welcome-login-btn').addEventListener('click', () => openModal(loginModal));
+            document.getElementById('login-form').addEventListener('submit', authSystem.handleLogin);
+            document.getElementById('registration-form').addEventListener('submit', authSystem.handleRegistrationRequest);
+            document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
+            document.querySelectorAll('.sidebar a').forEach(link => {
+                link.addEventListener('click', (e) => { e.preventDefault(); switchPage(e.currentTarget.getAttribute('data-target')); });
+            });
+        }
+        
         // --- AUTH & USER SYSTEM ---
         const authSystem = {
             currentUser: null, isAdmin: false, userProfile: null,
@@ -336,22 +363,39 @@
 
         // --- COURSE BUILDER MODULE ---
         const courseBuilder = {
-            // ... (Full implementation in the next block)
+            // ... (Implementation will be here)
         };
         
         // --- GOOGLE DRIVE MANAGER ---
         const googleDriveManager = {
-            // ... (Full implementation in the next block)
+            // ... (Implementation will be here)
         };
         
         // --- QUIZ EDITOR MODULE ---
         const quizEditor = {
-            // ... (Full implementation in the next block)
+            // ... (Implementation will be here)
         };
 
         // --- COURSE VIEWER MODULE ---
         const courseViewer = {
-            // ... (Full implementation in the next block)
+             loadCourses(containerId) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                database.ref('elearning-courses').on('value', snapshot => {
+                    container.innerHTML = !snapshot.exists() ? '<p>Nessun corso disponibile al momento.</p>' : '';
+                    snapshot.forEach(child => {
+                        const course = { id: child.key, ...child.val() };
+                        container.innerHTML += this.createCourseCardHTML(course);
+                    });
+                });
+            },
+            createCourseCardHTML(course) {
+                const thumbnail = course.coverImage || '/images/logo-dogworld-scuro.png';
+                return `<div class="course-card" onclick="courseViewer.open('${course.id}')"><img src="${thumbnail}" class="course-thumbnail" alt="${course.title}"><div class="course-content"><h4 class="course-title">${course.title || 'Senza Titolo'}</h4></div></div>`;
+            },
+            open(courseId) {
+                alert(`Apertura corso ${courseId}... (logica da implementare)`);
+            }
         };
 
         // --- TEXT EDITING MODULE ---
@@ -430,7 +474,6 @@
         }
         function openModal(modal) { if (modal) { modal.style.display = 'flex'; body.classList.add('modal-open'); } }
         function closeModal(modal) { if (modal) { modal.style.display = 'none'; body.classList.remove('modal-open'); } }
-
     </script>
 </body>
 </html>
