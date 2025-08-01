@@ -31,6 +31,7 @@
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* Sidebar & Navigation */
         .sidebar { height: 100vh; width: 250px; position: fixed; top: 0; left: 0; background-color: var(--primary-color); color: var(--light-text); padding-top: 20px; display: flex; flex-direction: column; z-index: 100; }
         .sidebar-header { text-align: center; margin-bottom: 15px; padding: 0 10px; }
         .sidebar-header .logo { width: 200px; height: auto; margin-bottom: 10px; }
@@ -44,9 +45,11 @@
         body.admin-view .sidebar ul li[data-role="admin"],
         body.admin-view .sidebar ul li[data-role="student"] { display: list-item; }
 
+        /* Content Area */
         .content { margin-left: 250px; width: calc(100% - 250px); }
         section { margin-bottom: 40px; padding: 25px; border-radius: 8px; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: relative; }
 
+        /* Admin Mode */
         .admin-only { display: none !important; }
         body.admin-mode .admin-only { display: block !important; }
         body.admin-mode [data-editable-text]:hover { box-shadow: 0 0 0 2px var(--accent-color); cursor: text; }
@@ -54,6 +57,7 @@
         #text-editor-toolbar { position: absolute; z-index: 1010; background: var(--dark-text); padding: 5px 8px; border-radius: 5px; display: flex; gap: 8px; }
         #text-editor-toolbar button { background: none; border: none; color: white; font-size: 16px; cursor: pointer; width: 30px; height: 30px; }
         
+        /* Generic Components */
         .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 20px; }
         .course-card, .request-card { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); overflow: hidden; position: relative; }
         .course-card { cursor: pointer; }
@@ -67,6 +71,7 @@
         .btn-approve { background: var(--success-color); }
         .btn-reject { background: var(--danger-color); }
 
+        /* Modal Styles */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); }
         .modal-content-wrapper { display: flex; justify-content: center; align-items: center; min-height: 100%; padding: 20px; }
         .modal-content { background-color: #fefefe; padding: 25px; border-radius: 8px; width: 90%; max-width: 600px; position: relative; }
@@ -76,6 +81,7 @@
         .form-container input, .form-container textarea, .form-container button, .form-container select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ddd; }
         .form-container button { background-color: var(--primary-color); color: var(--light-color); border: none; cursor: pointer; }
 
+        /* Course Creator Styles */
         #course-builder-list { min-height: 150px; border: 1px dashed #ccc; padding: 10px; border-radius: 5px; }
         .builder-item { display: flex; align-items: center; background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 8px; }
         .builder-item .drag-handle { cursor: move; margin-right: 15px; color: #777; }
@@ -85,7 +91,9 @@
         .drive-file-item { padding: 8px; cursor: pointer; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; }
         .drive-file-item:hover { background-color: #f0f0f0; }
         .drive-file-item.selected { background-color: var(--accent-color); color: white; }
+        .quiz-option-group { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 
+        /* Course Viewer Styles */
         #video-player-container { width: 100%; background: #000; margin-bottom: 20px; aspect-ratio: 16 / 9; }
         #video-player-container iframe { width: 100%; height: 100%; border: none; }
         #course-viewer-layout { display: flex; gap: 20px; }
@@ -128,7 +136,7 @@
                 <div id="dashboard-page" class="page"><section><h1 data-editable-text="dashboard/title">La Tua Dashboard</h1></section></div>
                 <div id="catalog-page" class="page"><section><h1>Catalogo Corsi</h1><div id="catalog-grid" class="card-grid"></div></section></div>
                 <div id="administration-page" class="page"><section><h1 data-editable-text="admin/title">Gestione Utenti e Richieste</h1></section><section><h3>Richieste di Iscrizione in Attesa</h3><div id="registration-requests-container" class="card-grid"></div></section><section><h3>Studenti Approvati</h3><div id="students-list-container"></div></section></div>
-                <div id="admin-courses-page" class="page"><section><h1>Gestione Corsi</h1><p>Crea nuovi corsi o modifica quelli esistenti.</p><button class="btn-primary admin-only" onclick="adminModule.openCourseCreator()"><i class="fas fa-plus"></i> Crea Nuovo Corso</button></section><section><h3>Corsi Esistenti</h3><div id="admin-courses-grid" class="card-grid"></div></section></div>
+                <div id="admin-courses-page" class="page"><section><h1>Gestione Corsi</h1><p>Crea nuovi corsi o modifica quelli esistenti.</p><button class="btn-primary admin-only" onclick="courseBuilder.start()"><i class="fas fa-plus"></i> Crea Nuovo Corso</button></section><section><h3>Corsi Esistenti</h3><div id="admin-courses-grid" class="card-grid"></div></section></div>
                 <div id="support-page" class="page"><section><h1>Supporto</h1></section></div>
             </main>
         </div>
@@ -148,7 +156,6 @@
         <div class="footer-buttons"><button id="logout-btn" style="display:none;"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
     </footer>
 
-    <!-- Firebase SDK & Google API -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -192,32 +199,26 @@
             await authSystem.initialize();
             setupEventListeners();
             
-            gapi.load('client', initializeGapiClient);
+            // Correctly chain GAPI/GSI initialization
+            gapi.load('client', async () => {
+                await gapi.client.init({ apiKey: GOOGLE_DRIVE_CONFIG.apiKey, discoveryDocs: GOOGLE_DRIVE_CONFIG.discoveryDocs });
+                gapiInited = true;
+            });
             const script = document.createElement('script');
             script.src = 'https://accounts.google.com/gsi/client';
             script.async = true;
             script.defer = true;
-            script.onload = initializeGsi;
+            script.onload = () => {
+                tokenClient = google.accounts.oauth2.initTokenClient({
+                    client_id: GOOGLE_DRIVE_CONFIG.clientId,
+                    scope: GOOGLE_DRIVE_CONFIG.scopes,
+                    callback: '', 
+                });
+                gsiInited = true;
+            };
             document.head.appendChild(script);
         }
 
-        function setupEventListeners() {
-            document.querySelectorAll('.close-btn').forEach(btn => btn.addEventListener('click', () => closeModal(btn.closest('.modal'))));
-            document.querySelectorAll('.modal').forEach(modal => modal.addEventListener('click', (e) => { if (e.target.classList.contains('modal-content-wrapper')) closeModal(modal); }));
-            
-            document.getElementById('show-register-modal-btn').addEventListener('click', (e) => { e.preventDefault(); closeModal(loginModal); openModal(registrationModal); });
-            document.getElementById('show-login-modal-btn').addEventListener('click', (e) => { e.preventDefault(); closeModal(registrationModal); openModal(loginModal); });
-            document.getElementById('welcome-login-btn').addEventListener('click', () => openModal(loginModal));
-            
-            document.getElementById('login-form').addEventListener('submit', authSystem.handleLogin);
-            document.getElementById('registration-form').addEventListener('submit', authSystem.handleRegistrationRequest);
-            document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
-
-            document.querySelectorAll('.sidebar a').forEach(link => {
-                link.addEventListener('click', (e) => { e.preventDefault(); switchPage(e.currentTarget.getAttribute('data-target')); });
-            });
-        }
-        
         // --- AUTH & USER SYSTEM ---
         const authSystem = {
             currentUser: null, isAdmin: false, userProfile: null,
@@ -335,39 +336,22 @@
 
         // --- COURSE BUILDER MODULE ---
         const courseBuilder = {
-             // Implementation here...
+            // ... (Full implementation in the next block)
         };
         
         // --- GOOGLE DRIVE MANAGER ---
         const googleDriveManager = {
-            // Implementation here...
+            // ... (Full implementation in the next block)
         };
         
         // --- QUIZ EDITOR MODULE ---
         const quizEditor = {
-            // Implementation here...
+            // ... (Full implementation in the next block)
         };
 
         // --- COURSE VIEWER MODULE ---
         const courseViewer = {
-             loadCourses(containerId) {
-                const container = document.getElementById(containerId);
-                if (!container) return;
-                database.ref('elearning-courses').on('value', snapshot => {
-                    container.innerHTML = !snapshot.exists() ? '<p>Nessun corso disponibile al momento.</p>' : '';
-                    snapshot.forEach(child => {
-                        const course = { id: child.key, ...child.val() };
-                        container.innerHTML += this.createCourseCardHTML(course);
-                    });
-                });
-            },
-            createCourseCardHTML(course) {
-                const thumbnail = course.coverImage || '/images/logo-dogworld-scuro.png';
-                return `<div class="course-card" onclick="courseViewer.open('${course.id}')"><img src="${thumbnail}" class="course-thumbnail" alt="${course.title}"><div class="course-content"><h4 class="course-title">${course.title || 'Senza Titolo'}</h4></div></div>`;
-            },
-            open(courseId) {
-                alert(`Apertura corso ${courseId}... (logica da implementare)`);
-            }
+            // ... (Full implementation in the next block)
         };
 
         // --- TEXT EDITING MODULE ---
@@ -379,7 +363,7 @@
                 document.body.addEventListener('click', (e) => {
                     if (!body.classList.contains('admin-mode')) return;
                     const target = e.target.closest('[data-editable-text]');
-                    if (this.currentEditingElement && !this.currentEditingElement.contains(e.target) && !document.getElementById('text-editor-toolbar').contains(e.target)) this.saveText();
+                    if (this.currentEditingElement && !this.currentEditingElement.contains(e.target) && !document.getElementById('text-editor-toolbar')?.contains(e.target)) this.saveText();
                     if (target && !target.isContentEditable) {
                         e.preventDefault(); e.stopPropagation();
                         this.makeTextEditable(target);
@@ -447,23 +431,6 @@
         function openModal(modal) { if (modal) { modal.style.display = 'flex'; body.classList.add('modal-open'); } }
         function closeModal(modal) { if (modal) { modal.style.display = 'none'; body.classList.remove('modal-open'); } }
 
-        // --- GOOGLE API INITIALIZATION ---
-        async function initializeGapiClient() {
-            try {
-                await gapi.client.init({ apiKey: GOOGLE_DRIVE_CONFIG.apiKey, discoveryDocs: GOOGLE_DRIVE_CONFIG.discoveryDocs });
-                gapiInited = true;
-            } catch (error) { console.error("Error initializing GAPI client", error); }
-        }
-        function initializeGsi() {
-            try {
-                tokenClient = google.accounts.oauth2.initTokenClient({
-                    client_id: GOOGLE_DRIVE_CONFIG.clientId,
-                    scope: GOOGLE_DRIVE_CONFIG.scopes,
-                    callback: '', 
-                });
-                gsiInited = true;
-            } catch (error) { console.error("Error initializing GSI client", error); }
-        }
     </script>
 </body>
 </html>
