@@ -1,19 +1,9 @@
-# File: netlify.toml - VERSIONE CORRETTA E UNIFICATA
+# File: netlify.toml - Versione Corretta per il sito E-Learning
 
 [build]
   command = "npm install"
   functions = "netlify/functions"
-  # ATTENZIONE: Questa riga presume che il tuo index.html sia in una cartella "public".
-  # Se il tuo index.html è nella cartella principale (root), devi cancellare la riga seguente.
   publish = "."
 
 [functions]
-  # ISTRUZIONE CHIAVE: Aggiungi questa riga per risolvere l'errore "Cannot find module".
   node_bundler = "zisi"
-
-  # Le tue funzioni schedulate rimangono invariate.
-  [functions.check-event-reminders]
-    schedule = "0 8 * * *"
-
-  [functions.appointment-reminders]
-    schedule = "0 7 * * *"
